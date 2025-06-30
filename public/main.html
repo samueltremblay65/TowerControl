@@ -3,18 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OG Transpo</title>
+    <title>Tower Control</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Kanit:ital,wght@0,200;0,400;0,700;1,100&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="map_container">
         <!-- <button class="game_button" id="btn_new_transit_line">New Transit Line</button> -->
-    </div>
+        <button type="button" class="game_button" id="btn_pause">⏸︎</button>
+        <div class="modal" id="game_over_modal">
+            <h1>Game over</h1>
+            <h3 id="score">Score: </h3>
+            <div>
+                <button id="play_again">Play again</button>
+                <button id="select_map">Select Map</button>
+            </div>
+        </div>
     <canvas id="canvas" width="1200px" height="1200px"></canvas>
+
+
 </body>
     <!-- prettier-ignore -->
     <script src="point.js"></script>

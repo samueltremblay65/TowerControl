@@ -1,0 +1,3 @@
+const icon_jiraf = new Image();
+icon_jiraf.src = "icons/jiraf.png";
+const jiraf = {location: new Point(430, 674), flag: icon_jiraf};

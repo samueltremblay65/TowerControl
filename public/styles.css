@@ -18,6 +18,7 @@
     transform: translate(-50%, -50%);
     z-index: 1;
     user-select: none;
+    text-align: right;
 }
 
 body, html {
@@ -25,12 +26,20 @@ body, html {
     height: 100%;
     width: 100%;
     position: absolute;
+
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 body {
     overflow: hidden;
     width: 100%;
     text-align: center;
+}
+
+button {
+  font-family: inherit
 }
 
 canvas {
@@ -45,5 +54,30 @@ canvas {
 
 .game_button {
     margin-block: 5px;
-    margin-inline-start: 5px;
+    margin-inline: 5px;
+    position: relative;
+    z-index: 2;
+}
+
+.modal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: orange;
+    z-index: 2;
+    margin: auto;
+    padding: 10%;
+    border: none;
+    border-radius: 20px;
+    visibility: hidden;
+}
+
+h1 {
+    margin: 0;
+}
+
+#btn_pause {
+    width: 30px;
+    background-color: orange;
 }
