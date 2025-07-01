@@ -64,24 +64,34 @@ icon_russia.src = "icons/russia.png";
 const icon_turkey = new Image();
 icon_turkey.src = "icons/turkey.png";
 
-
 let canvas = document.getElementById("canvas");
 let game_container = document.getElementById("map_container");
 let ctx = canvas.getContext("2d");
 
 const FPS = 20;
-const WORLD_MARGIN = 80;
+const WORLD_MARGIN = 100;
 
 const PLANE_SIZE = 64;
 
 const COLLISION_RADIUS = PLANE_SIZE / 2 - 4;
 
+const TRAIL_GRANULARITY = 50;
+
 const planes = [];
+
 let plane_creation_time = 1000;
 
 let score = 0;
+let plane_interval = 10;
+let interval_counter = 0;
 
 let mouse_position;
+
+let controls_state = "none";
+let mouse_down = false;
+
+let trail = [];
+
 let selected = null; 
 
 let game_over = false;
@@ -105,10 +115,6 @@ const norway = {location: new Point(437, 380), flag: icon_norway};
 const russia = {location: new Point(902, 437), flag: icon_russia};
 const turkey = {location: new Point(868, 950), flag: icon_turkey};
 
-
-
-
-
 const DESTINATIONS = [iceland, italy, france, spain, denmark, belgium, czech, uk, portugal, germany, switzerland,
     netherlands, poland, romania, norway, russia, turkey
 ];
@@ -118,6 +124,17 @@ game_map.onload = function() {
     document.addEventListener("mousemove", event => {
         // Track position of mouse on canvas
         mouse_position = getMousePos(canvas, event);
+
+        if(controls_state == "trail" && mouse_down) {
+            const mouse_point = new Point(mouse_position.x, mouse_position.y);
+            if(trail.length == 0) trail.push(mouse_point);
+
+            if(mouse_point.distanceTo(trail[trail.length-1]) > TRAIL_GRANULARITY) {
+                trail.push(mouse_point);
+                selected.trail = trail;
+            }
+
+        }
     });
 
     document.getElementById("play_again").addEventListener("click", function() {
@@ -134,15 +151,29 @@ game_map.onload = function() {
 
     });
 
-    document.addEventListener("click", event => {
+    document.addEventListener("mousedown", event => {
+        mouse_down = true;
+        if(controls_state == "trail_ready") {
+            controls_state = "trail";
+            console.log("Trailing");
+        }
+    });
+
+    document.addEventListener("mouseup", event => {
+        if(controls_state == "trail") {
+            // Give trail to selected plane
+            console.log("Trail finished");
+            controls_state = "none";
+            trail = [];
+        }
+
         // Plane selection logic
         const pos = getMousePos(canvas, event);
-
         console.log(pos);
 
         const mouse_point = new Point(pos.x, pos.y);
 
-        let hasSelected = false;
+        selected = null;
 
         // If user clicks on plane, select that plane
         planes.forEach(plane => {
@@ -150,13 +181,12 @@ game_map.onload = function() {
 
             if(plane.location.distanceTo(mouse_point) < PLANE_SELECT_MARGIN) {
                 selected = plane;
-                hasSelected = true;
+                controls_state = "trail_ready";
+                plane.trail = [];
             }
         });
 
-        if(!hasSelected){
-            selected = null;
-        }
+        mouse_down = false;
     });
 
     createPlane();
@@ -191,9 +221,13 @@ game_map.onload = function() {
     const planeCreation = setInterval(function() {
         if(game_over) return;
 
-        const chance = Math.min(0.3, Math.round((1 + score / 5))/12);
+        if(interval_counter++ == plane_interval) {
+            createPlane();
+            interval_counter = 0;
+        }
 
-        if(Math.random() < chance) createPlane();
+
+        if(score % 5 == 0 && plane_interval > 3 ) plane_interval--;
 
         if(planes.length == 0) createPlane();
     }, plane_creation_time);
@@ -254,6 +288,24 @@ function checkLandings() {
 function planeMovement() {
     planes.forEach(plane => {
         // Plane movement
+
+        // If plane has trail
+        if(plane.trail.length != 0) {
+            const aim = plane.trail[0];
+
+            const x = aim.x - plane.location.x;
+            const y = aim.y - plane.location.y;
+
+            let orientation = Math.atan(y/x);
+
+            if(x < 0) orientation = orientation + Math.PI;
+
+            plane.orientation = orientation;
+
+            if(plane.location.distanceTo(aim) < 20) plane.trail.shift();
+        }
+        
+        // Autopilot
         plane.location.x += Math.cos(plane.orientation) * plane.speed / FPS;
         plane.location.y += Math.sin(plane.orientation) * plane.speed / FPS;
 
@@ -268,6 +320,10 @@ function planeMovement() {
 }
 
 function mouseTracker() {
+    if(controls_state == "trail") {
+        return;
+    }
+    
     const plane = selected;
 
     const x = mouse_position.x - plane.location.x;
@@ -299,6 +355,20 @@ function draw_plane(plane) {
 	ctx.drawImage(airplane, 0, 0, airplane.width, airplane.height, -32, -32, PLANE_SIZE, PLANE_SIZE);
 
 	ctx.restore();
+
+    plane.trail.forEach(point => {
+        ctx.beginPath();
+        const radius = 5;
+        const startAngle = 0;
+        const endAngle = 2 * Math.PI;
+        ctx.fillStyle = "white";
+
+        ctx.arc(point.x, point.y, radius, startAngle, endAngle);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.strokeStyle = "black";
+    });
 }
 
 function planeSelectionOutline() {

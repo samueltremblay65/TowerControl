@@ -3,7 +3,7 @@ class Plane {
         this.location = new Point(x, y);
         this.orientation = Math.random() * 2 * Math.PI;
         this.speed = 50;
-        this.path = [];
+        this.trail = [];
         this.path_state = 0;
         this.destination = destination;
     }
