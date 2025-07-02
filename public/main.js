@@ -64,9 +64,95 @@ icon_russia.src = "icons/russia.png";
 const icon_turkey = new Image();
 icon_turkey.src = "icons/turkey.png";
 
+const icon_albania = new Image();
+icon_albania.src = "icons/albania.png";
+const albania = {location: new Point(642, 992), flag: icon_albania};
+
+const icon_serbia = new Image();
+icon_serbia.src = "icons/serbia.png";
+const serbia = {location: new Point(652, 897), flag: icon_serbia};
+
+const icon_slovakia = new Image();
+icon_slovakia.src = "icons/slovakia.png";
+const slovakia = {location: new Point(606, 751), flag: icon_slovakia};
+
+const icon_slovenia = new Image();
+icon_slovenia.src = "icons/slovenia.png";
+const slovenia = {location: new Point(526, 849), flag: icon_slovenia};
+
+const icon_andorra = new Image();
+icon_andorra.src = "icons/andorra.png";
+const andorra = {location: new Point(264, 948), flag: icon_andorra};
+
+const icon_bulgaria = new Image();
+icon_bulgaria.src = "icons/bulgaria.png";
+const bulgaria = {location: new Point(721, 939), flag: icon_bulgaria};
+
+const icon_austria = new Image();
+icon_austria.src = "icons/austria.png";
+const austria = {location: new Point(526, 799), flag: icon_austria};
+
+const icon_croatia = new Image();
+icon_croatia.src = "icons/croatia.png";
+const croatia = {location: new Point(548, 874), flag: icon_croatia};
+
+const icon_estonia = new Image();
+icon_estonia.src = "icons/estonia.png";
+const estonia = {location: new Point(657, 415), flag: icon_estonia};
+
+const icon_finland = new Image();
+icon_finland.src = "icons/finland.png";
+const finland = {location: new Point(638, 327), flag: icon_finland};
+
+const icon_georgia = new Image();
+icon_georgia.src = "icons/georgia.png";
+const georgia = {location: new Point(1091, 803), flag: icon_georgia};
+
+const icon_hungary = new Image();
+icon_hungary.src = "icons/hungary.png";
+const hungary = {location: new Point(613, 808), flag: icon_hungary};
+
+const icon_ireland = new Image();
+icon_ireland.src = "icons/ireland.png";
+const ireland = {location: new Point(144, 589), flag: icon_ireland};
+
+const icon_kosovo = new Image();
+icon_kosovo.src = "icons/kosovo.png";
+const kosovo = {location: new Point(656, 948), flag: icon_kosovo};
+
+const icon_latvia = new Image();
+icon_latvia.src = "icons/latvia.png";
+const latvia = {location: new Point(650, 476), flag: icon_latvia};
+
+const icon_lithuania = new Image();
+icon_lithuania.src = "icons/lithuania.png";
+const lithuania = {location: new Point(657, 532), flag: icon_lithuania};
+
+const icon_luxembourg = new Image();
+icon_luxembourg.src = "icons/luxembourg.png";
+const luxembourg = {location: new Point(368, 734), flag: icon_luxembourg};
+
+const icon_macedonia = new Image();
+icon_macedonia.src = "icons/macedonia.png";
+const macedonia = {location: new Point(679, 975), flag: icon_macedonia};
+
+const icon_moldova = new Image();
+icon_moldova.src = "icons/moldova.png";
+const moldova = {location: new Point(782, 765), flag: icon_moldova};
+
+const icon_bosnia = new Image();
+icon_bosnia.src = "icons/bosnia.png";
+const bosnia = {location: new Point(597, 907), flag: icon_bosnia};
+
+const icon_montenegro = new Image();
+icon_montenegro.src = "icons/montenegro.png";
+const montenegro = {location: new Point(623, 941), flag: icon_montenegro};
+
 let canvas = document.getElementById("canvas");
 let game_container = document.getElementById("map_container");
 let ctx = canvas.getContext("2d");
+
+let modal_shown = false;
 
 const FPS = 20;
 const WORLD_MARGIN = 100;
@@ -102,21 +188,25 @@ const france = {location: new Point(330, 784), flag: icon_france};
 const spain = {location: new Point(152, 997), flag: icon_spain};
 const denmark = {location: new Point(430, 600), flag: icon_denmark};
 const belgium = {location: new Point(346, 700), flag: icon_belgium};
-const czech = {location: new Point(608, 751), flag: icon_czech};
+const czech = {location: new Point(552, 731), flag: icon_czech};
 const portugal = {location: new Point(49, 1008), flag: icon_portugal};
 const uk = {location: new Point(242, 574), flag: icon_uk};
 const germany = {location: new Point(430, 674), flag: icon_germany};
 const switzerland = {location: new Point(397, 821), flag: icon_switzerland};
 const netherlands = {location: new Point(355, 657), flag: icon_netherlands};
-const greece = {location: new Point(686, 842), flag: icon_greece};
+const greece = {location: new Point(709, 1061), flag: icon_greece};
 const poland = {location: new Point(600, 635), flag: icon_poland};
 const romania = {location: new Point(746, 847), flag: icon_romania};
 const norway = {location: new Point(437, 380), flag: icon_norway};
 const russia = {location: new Point(902, 437), flag: icon_russia};
 const turkey = {location: new Point(868, 950), flag: icon_turkey};
+const sweden = {location: new Point(524, 421), flag: icon_sweden};
+const ukraine = {location: new Point(818, 645), flag: icon_ukraine};
 
 const DESTINATIONS = [iceland, italy, france, spain, denmark, belgium, czech, uk, portugal, germany, switzerland,
-    netherlands, poland, romania, norway, russia, turkey
+    netherlands, poland, romania, norway, russia, turkey, greece, sweden, ukraine, albania, andorra, austria, bulgaria,
+    croatia, estonia, finland, georgia, hungary, ireland, kosovo, latvia, lithuania, luxembourg, macedonia, moldova,
+    slovenia, slovakia, serbia, bosnia, montenegro
 ];
 
 game_map.onload = function() {
@@ -133,7 +223,6 @@ game_map.onload = function() {
                 trail.push(mouse_point);
                 selected.trail = trail;
             }
-
         }
     });
 
@@ -145,6 +234,7 @@ game_map.onload = function() {
     });
 
     document.getElementById("btn_pause").addEventListener("click", function() {
+        if(modal_shown) return;
         game_over = !game_over;
         if(game_over) document.getElementById("btn_pause").innerHTML = "▷";
         else document.getElementById("btn_pause").innerHTML = "⏸︎";
@@ -169,7 +259,7 @@ game_map.onload = function() {
 
         // Plane selection logic
         const pos = getMousePos(canvas, event);
-        console.log(pos);
+        console.log(`new Point(${pos.x}, ${pos.y})`);
 
         const mouse_point = new Point(pos.x, pos.y);
 
@@ -403,7 +493,8 @@ function getMousePos(canvas, event) {
 
 function showGameOverDialog() {
     document.getElementById("game_over_modal").style.visibility = "visible";
-    document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("score").innerHTML = score;
+    modal_shown = true;
 }
 
 function hideGameOverDialog() {

@@ -18,7 +18,7 @@
     transform: translate(-50%, -50%);
     z-index: 1;
     user-select: none;
-    text-align: right;
+    text-align: left;
 }
 
 body, html {
@@ -35,11 +35,12 @@ body, html {
 body {
     overflow: hidden;
     width: 100%;
-    text-align: center;
+    text-align: Left;
 }
 
 button {
-  font-family: inherit
+    font-family: inherit;
+    margin-top: 10px;
 }
 
 canvas {
@@ -80,4 +81,8 @@ h1 {
 #btn_pause {
     width: 30px;
     background-color: orange;
+}
+
+.result {
+    display: inline;
 }
